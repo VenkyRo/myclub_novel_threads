@@ -1,0 +1,2 @@
+import { Router } from 'express';import { protect } from '../middleware/auth.js';import { like,unlike,addBookmark,removeBookmark,listBookmarks,submitComment } from '../controllers/readerController.js';
+const r=Router();r.use(protect);r.post('/chapters/:chapterId/like',like);r.delete('/chapters/:chapterId/like',unlike);r.post('/bookmarks/:chapterId',addBookmark);r.delete('/bookmarks/:chapterId',removeBookmark);r.get('/bookmarks',listBookmarks);r.post('/chapters/:chapterId/comments',submitComment);export default r;

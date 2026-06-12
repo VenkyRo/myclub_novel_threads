@@ -1,0 +1,10 @@
+import Chapter from '../models/Chapter.js';
+import Bookmark from '../models/Bookmark.js';
+import Comment from '../models/Comment.js';
+
+export async function like(req,res,next){try{const c=await Chapter.findByIdAndUpdate(req.params.chapterId,{$addToSet:{likedBy:req.user._id}},{new:true});if(!c)return res.status(404).json({success:false,message:'Chapter not found'});res.json({success:true,likes:c.likedBy.length})}catch(e){next(e)}}
+export async function unlike(req,res,next){try{const c=await Chapter.findByIdAndUpdate(req.params.chapterId,{$pull:{likedBy:req.user._id}},{new:true});if(!c)return res.status(404).json({success:false,message:'Chapter not found'});res.json({success:true,likes:c.likedBy.length})}catch(e){next(e)}}
+export async function addBookmark(req,res,next){try{const c=await Chapter.findById(req.params.chapterId);if(!c)return res.status(404).json({success:false,message:'Chapter not found'});await Bookmark.updateOne({userId:req.user._id,chapterId:c._id},{$setOnInsert:{novelId:c.novelId}},{upsert:true});res.status(201).json({success:true,message:'Bookmark saved'})}catch(e){next(e)}}
+export async function removeBookmark(req,res,next){try{await Bookmark.deleteOne({userId:req.user._id,chapterId:req.params.chapterId});res.json({success:true,message:'Bookmark removed'})}catch(e){next(e)}}
+export async function listBookmarks(req,res,next){try{const bookmarks=await Bookmark.find({userId:req.user._id}).populate('novelId','title slug coverImageUrl').populate('chapterId','title chapterNumber');res.json({success:true,bookmarks})}catch(e){next(e)}}
+export async function submitComment(req,res,next){try{const {content}=req.body;const c=await Chapter.findById(req.params.chapterId);if(!c)return res.status(404).json({success:false,message:'Chapter not found'});if(!content?.trim())return res.status(400).json({success:false,message:'Comment is required'});await Comment.create({userId:req.user._id,novelId:c.novelId,chapterId:c._id,content});res.status(201).json({success:true,message:'Comment submitted for approval'})}catch(e){next(e)}}
