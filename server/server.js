@@ -24,35 +24,36 @@ const app = express();
 app.use(helmet());
 
 /*
-  Allowed frontend URLs:
-  - Local frontend for development
-  - Netlify frontend for public users
+  Always allow:
+  - Local React frontend
+  - Public Netlify frontend
 
-  You can also update CLIENT_URL inside Render Environment Variables.
+  Also include any additional URLs from the Render CLIENT_URL variable.
 */
-const allowedOrigins = (
-  process.env.CLIENT_URL ||
-  "http://localhost:5173,https://meek-cannoli-450f96.netlify.app"
-)
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://meek-cannoli-450f96.netlify.app"
+];
+
+const environmentOrigins = (process.env.CLIENT_URL || "")
   .split(",")
   .map((url) => url.trim())
   .filter(Boolean);
 
+const allowedOrigins = [...new Set([...defaultOrigins, ...environmentOrigins])];
+
+console.log("Allowed CORS origins:", allowedOrigins);
+
 const corsOptions = {
   origin(origin, callback) {
     /*
-      Allow requests without an Origin header:
-      - Direct browser API testing
-      - Postman
-      - Server-to-server calls
+      Allow direct browser URL tests, Postman requests,
+      and server-to-server requests without an Origin header.
     */
     if (!origin) {
       return callback(null, true);
     }
 
-    /*
-      Allow only trusted frontend URLs
-    */
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -70,13 +71,12 @@ const corsOptions = {
 };
 
 /*
-  Keep CORS middleware before all routes.
-  This also handles browser preflight OPTIONS requests.
+  Keep CORS before every API route.
 */
 app.use(cors(corsOptions));
 
 /*
-  Request parsing and logs
+  Request parsing and logging
 */
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -84,7 +84,7 @@ app.use(mongoSanitize());
 app.use(morgan("dev"));
 
 /*
-  General API rate limiter
+  General API rate limit
 */
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -110,10 +110,7 @@ app.get("/api/health", (req, res) => {
 });
 
 /*
-  Authentication routes:
-  - Register
-  - Login
-  - Current user profile
+  Authentication routes
 */
 app.use(
   "/api/auth",
@@ -131,33 +128,22 @@ app.use(
 );
 
 /*
-  Public routes:
-  - Published novels
-  - Published chapters
-  - Approved comments
+  Public reader routes
 */
 app.use("/api", publicRoutes);
 
 /*
-  Reader routes:
-  - Likes
-  - Bookmarks
-  - Submit comments
+  Protected reader routes
 */
 app.use("/api", readerRoutes);
 
 /*
-  Admin routes:
-  - Dashboard
-  - Novels
-  - Chapters
-  - Readers
-  - Comments
+  Protected admin routes
 */
 app.use("/api/admin", adminRoutes);
 
 /*
-  Unknown API route handler
+  Unknown API route
 */
 app.use("/api", (req, res) => {
   res.status(404).json({
