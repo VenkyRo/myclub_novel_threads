@@ -22,3 +22,49 @@
 .dashboard-manager-section>.section-heading h2{margin:0;font-family:'Playfair Display','Noto Sans Telugu',serif;font-size:1.9rem}
 .dashboard-manager-section .admin-page-banner{display:none}
 @media(max-width:720px){.dashboard-manager-section>.section-heading{align-items:flex-start;flex-direction:column}.dashboard-manager-section>.section-heading h2{font-size:1.55rem}}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-user-name {
+  max-width: 160px;
+  font-weight: 800;
+  color: #f5f3ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-logout {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .nav-user {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .nav-user-name {
+    max-width: 100%;
+    display: block;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #f5f3ff;
+    color: #5b21b6;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .nav-user .nav-logout {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}

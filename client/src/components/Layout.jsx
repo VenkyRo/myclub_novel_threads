@@ -23,19 +23,57 @@ export default function Layout({ children }) {
             </span>
           </Link>
 
-          <button className="menu-toggle" type="button" onClick={() => setOpen((value) => !value)} aria-label="Toggle menu">☰</button>
+          <button
+            className="menu-toggle"
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
 
           <nav className={open ? "nav-links open" : "nav-links"}>
-            <NavLink to="/" onClick={close}>Home</NavLink>
-            <NavLink to="/novels" onClick={close}>Novels</NavLink>
-            {user && !isAdmin && <NavLink to="/bookmarks" onClick={close}>Bookmarks</NavLink>}
-            {isAdmin && <NavLink to="/admin/dashboard" onClick={close}>Admin Panel</NavLink>}
+            <NavLink to="/" onClick={close}>
+              Home
+            </NavLink>
+            <NavLink to="/novels" onClick={close}>
+              Novels
+            </NavLink>
+            {user && !isAdmin && (
+              <NavLink to="/bookmarks" onClick={close}>
+                Bookmarks
+              </NavLink>
+            )}
+            {isAdmin && (
+              <NavLink to="/admin/dashboard" onClick={close}>
+                Admin Panel
+              </NavLink>
+            )}
             {user ? (
-              <button className="nav-logout" type="button" onClick={() => { logout(); close(); }}>Logout</button>
+              <div className="nav-user">
+                <span className="nav-user-name">
+                  👤 {user.name || user.email}
+                </span>
+
+                <button
+                  className="nav-logout"
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    close();
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <>
-                <NavLink to="/login" onClick={close}>Login</NavLink>
-                <NavLink className="nav-cta" to="/register" onClick={close}>Register</NavLink>
+                <NavLink to="/login" onClick={close}>
+                  Login
+                </NavLink>
+                <NavLink className="nav-cta" to="/register" onClick={close}>
+                  Register
+                </NavLink>
               </>
             )}
           </nav>
@@ -54,7 +92,10 @@ export default function Layout({ children }) {
       {!showAdminWorkspace && (
         <footer className="footer">
           <div className="footer-inner">
-            <div><h3>Novel Threads</h3><p>తెలుగు నవలలను ప్రేమించే పాఠకుల కోసం.</p></div>
+            <div>
+              <h3>Novel Threads</h3>
+              <p>తెలుగు నవలలను ప్రేమించే పాఠకుల కోసం.</p>
+            </div>
             <span>© {new Date().getFullYear()} Novel Threads</span>
           </div>
         </footer>
